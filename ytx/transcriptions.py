@@ -43,7 +43,8 @@ def construire(projet):
             missing.append(v.id)
             continue
         url = f"https://www.youtube.com/watch?v={v.id}"
-        lines = [f"# {v.titre}", "", f"- Categorie : {v.categorie}", f"- Duree : {v.duree // 60} min",
+        lines = [f"# {v.titre}", "", f"- Date : {projet.date(v.id) or 'inconnue'}",
+                 f"- Categorie : {v.categorie}", f"- Duree : {v.duree // 60} min",
                  f"- Source : {'sous-titres YouTube' if has_subs else 'Whisper'}", f"- Lien : {url}",
                  f"- Chaine : {v.chaine}", ""]
         words = 0
@@ -56,5 +57,10 @@ def construire(projet):
         ratio = words / max(v.duree, 1) * 60
         print(f"{words:6d} mots  {ratio:4.0f} m/min  {v.titre[:70]}")
     print(f"{done}/{len(videos)} transcriptions, {total_words} mots")
+    chrono = projet.chronologie()
+    projet.chronologie_tsv.write_text("".join(
+        f"{projet.date(v.id) or 'inconnue'}\t{v.id}\t{v.categorie}\t{v.titre}\n" for v in chrono))
+    undated = sum(1 for v in chrono if not projet.date(v.id))
+    print(f"ordre de publication dans data/chronologie.tsv" + (f" ({undated} sans date)" if undated else ""))
     if missing:
         print(f"{len(missing)} sans sous-titres ni Whisper : lancer « python3 -m ytx whisper {projet.dir.name} »")

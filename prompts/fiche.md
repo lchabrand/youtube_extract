@@ -37,4 +37,23 @@ Ce qu'il montre ou raconte : date, contexte, chiffres, résultat. Dire quand une
 - Mots mal transcrits.
 ```
 
+## Fichier JSON, à côté de la fiche
+
+`chaines/<nom>/fiches/<id>.json` reprend chaque affirmation de la fiche, une par entrée. C'est lui qui sert au registre et au calcul de la confiance ; `python3 -m ytx verifier-fiches <nom>` le contrôle contre la transcription.
+
+```json
+{"video": "<id>", "affirmations": [
+  {"t": 186, "type": "regle", "cle": "biais.delivering_from", "statut": "nouveau", "renvoi": null,
+   "texte": "Le biais part du côté de liquidité qui vient d'être pris.",
+   "citation": "we're delivering from sell side because that low was taken"}
+]}
+```
+
+- **`t`** : secondes, celles du lien horodaté de la transcription (le nombre après `&t=`) où commence le passage.
+- **`citation`** : ses mots exacts, recopiés de la transcription, 8 à 30 mots, dans la minute de `t` ou la suivante. Pas de traduction, pas de reformulation : la vérification cherche ces mots. Une citation introuvable rend l'affirmation inutilisable.
+- **`type`** : `regle`, `definition`, `chiffre`, `exemple`, `trade` ou `limite`.
+- **`cle`** : identifiant court du sujet, `theme.sujet` en minuscules (`fvg.definition`, `entree.stop`). Reprendre une clé de `data/cles.tsv` quand c'est le même sujet ; en créer une sinon. Deux vidéos qui disent la même chose doivent avoir la même clé : c'est ce qui permet de compter.
+- **`statut`** : par rapport aux vidéos précédentes, `nouveau`, `repete`, `precise` (ajoute une condition ou un chiffre) ou `contredit` (dit autre chose). Avec `precise` ou `contredit`, `renvoi` donne la clé visée si elle diffère.
+- **`texte`** : l'affirmation en français, une phrase.
+
 Adapter les sections au sujet de la chaîne. Pour une chaîne de trading, remplacer « Exemples concrets » par deux sections : « Entrées, stops, objectifs, gestion » puis « Trades et exemples concrets » (date, instrument, sens, entrée, stop, sortie, résultat annoncé).

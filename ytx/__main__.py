@@ -4,7 +4,7 @@ import json
 import shutil
 import sys
 
-from . import images, listing, sous_titres, transcriptions, whisper
+from . import fiches, images, listing, sous_titres, transcriptions, whisper
 from .projet import CHAINES, Projet
 
 EXEMPLE = CHAINES / "exemple" / "chaine.json"
@@ -104,6 +104,10 @@ def main(argv=None):
     command("images", "macOS : télécharger les vidéos et lire le texte à l'écran",
             lambda pr, a: images.images(pr, a.garder_videos or None),
             **{"--garder-videos": {"action": "store_true", "help": "ne pas effacer les vidéos après lecture"}})
+    command("verifier-fiches", "contrôler liens et citations des fiches contre les transcriptions",
+            lambda pr, a: fiches.verifier(pr))
+    command("registre", "fusionner les fiches JSON : affirmations.tsv et confiance par clé dans cles.tsv",
+            lambda pr, a: fiches.registre(pr))
     command("statut", "où en est chaque étape", lambda pr, a: statut(pr))
     command("tout", "lister, sélectionner, sous-titres, Whisper, vérification, transcriptions", tout,
             **{"--relister": {"action": "store_true", "help": "refaire le listing même s'il existe"},

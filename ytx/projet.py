@@ -19,6 +19,7 @@ DEFAUTS = {
     "sources": [],
     "onglets": ["videos", "streams"],
     "langue": "en",
+    "vocabulaire": "",
     "duree_min_s": 120,
     "categories": [],
     "defaut": "formation",
@@ -61,6 +62,8 @@ class Projet:
         self.selection_tsv = self.data / "selection.tsv"
         self.exclues_tsv = self.data / "exclues.tsv"
         self.whisper_bad_tsv = self.data / "whisper_bad.tsv"
+        self.chronologie_tsv = self.data / "chronologie.tsv"
+        self.affirmations_tsv = self.data / "affirmations.tsv"
         self._categories = [(c["nom"], re.compile(c["motif"], re.I), c.get("exclure", False))
                             for c in self.config["categories"]]
 
@@ -103,6 +106,18 @@ class Projet:
     def whisper_json(self, video_id):
         path = self.whisper / f"{video_id}.json"
         return path if path.exists() else None
+
+    def date(self, video_id):
+        """Upload date YYYY-MM-DD from data/info/<id>.info.json, written with the subtitles or the audio; else ''."""
+        path = self.info / f"{video_id}.info.json"
+        if not path.exists():
+            return ""
+        day = json.loads(path.read_text()).get("upload_date") or ""
+        return f"{day[:4]}-{day[4:6]}-{day[6:]}" if len(day) == 8 else ""
+
+    def chronologie(self):
+        """The selection in upload order, undated videos last."""
+        return sorted(self.selection(), key=lambda v: (self.date(v.id) or "9999", v.id))
 
     def fichier_video(self, video_id):
         return next((p for p in (self.video / f"{video_id}.mp4", self.video / f"{video_id}.webm") if p.exists()), None)

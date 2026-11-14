@@ -56,6 +56,10 @@ def _whisper(projet, video_id, source, robust):
     cmd = ["whisper-cli", "-m", str(modele(WHISPER_MODEL)), "-l", projet.config["langue"]]
     if robust:
         cmd += ["-mc", "0", "--vad", "-vm", str(modele(VAD_MODEL))]
+    if projet.config["vocabulaire"]:
+        # The channel's jargon as initial prompt, so "bullish FVG" is not heard as "busy". Carried over to every
+        # window, since the robust mode keeps no context.
+        cmd += ["--prompt", projet.config["vocabulaire"], "--carry-initial-prompt"]
     result = subprocess.run(cmd + ["-oj", "-of", str(projet.whisper / video_id), "-f", str(wav), "-np"],
                             capture_output=True, text=True)
     wav.unlink(missing_ok=True)

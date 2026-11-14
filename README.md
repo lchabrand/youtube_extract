@@ -81,7 +81,9 @@ Pour essayer sur quelques vidéos seulement : `python3 -m ytx tout machaine --li
 | `whisper` | transcrit les vidéos sans sous-titres | `data/whisper/` |
 | `verifier-whisper` | repère les transcriptions qui bouclent | `data/whisper_bad.tsv` |
 | `refaire-whisper` | les refait avec détection de voix (ancien résultat gardé) | `data/whisper/`, `data/whisper_old/` |
-| `transcriptions` | une transcription lisible par vidéo | `transcripts/` |
+| `transcriptions` | une transcription lisible par vidéo, datée, et l'ordre de publication | `transcripts/`, `data/chronologie.tsv` |
+| `verifier-fiches` | contrôle les liens et les citations des fiches contre les transcriptions | `data/verif_fiches.tsv` |
+| `registre` | fusionne les fiches JSON, compte les vidéos par sujet | `data/affirmations.tsv`, `data/cles.tsv` |
 | `images` | macOS : vidéo sans le son, texte à l'écran toutes les 10 s | `data/ocr/<id>.jsonl` |
 | `statut` | compte ce qui est fait à chaque étape | |
 
@@ -96,6 +98,7 @@ Voir `chaines/exemple/chaine.json`.
 | `sources` | une ou plusieurs chaînes : `@handle`, identifiant `UC…`, URL de chaîne, ou URL de playlist |
 | `onglets` | `videos`, `streams`, `shorts` |
 | `langue` | langue des vidéos : sous-titres et Whisper (`en`, `fr`…) |
+| `vocabulaire` | jargon de la chaîne, donné à Whisper en amorce pour qu'il l'écrive correctement (« fair value gap, order block… ») |
 | `duree_min_s` | vidéos plus courtes écartées (les shorts) |
 | `categories` | liste ordonnée de `{"nom", "motif"}` ; `motif` est une expression régulière cherchée dans le titre, sans tenir compte de la casse. La première qui correspond gagne. Avec `"exclure": true`, les titres qui correspondent sont écartés. L'ordre sert aussi de priorité pour `images`. |
 | `defaut` | catégorie des titres qu'aucun motif ne reconnaît ; `null` pour les écarter |
@@ -108,8 +111,20 @@ Voir `chaines/exemple/chaine.json`.
 
 Le pipeline s'arrête aux transcriptions. Pour la suite, donner à un modèle :
 
-- `prompts/fiche.md` avec une transcription : une fiche par vidéo dans `chaines/<nom>/fiches/<id>.md` ;
+- `prompts/fiche.md` avec une transcription : une fiche par vidéo dans `chaines/<nom>/fiches/<id>.md`, et la même en JSON (`<id>.json`), une affirmation par entrée avec la citation exacte ;
 - `prompts/synthese.md` avec toutes les fiches : `chaines/<nom>/REGLES.md`.
+
+Faire les fiches dans l'ordre de `data/chronologie.tsv` : chacune dit ce qui est nouveau, précisé ou contredit par rapport aux précédentes. Entre deux fiches, deux contrôles :
+
+```bash
+python3 -m ytx verifier-fiches machaine
+```
+
+```bash
+python3 -m ytx registre machaine
+```
+
+Le premier vérifie que chaque horodatage existe et que chaque citation se trouve bien, mot pour mot, dans la minute citée : une source inventée ou décalée est signalée. Le second rassemble les affirmations et compte, par sujet (`cle`), combien de vidéos distinctes le disent : « Répétée » dès deux vidéos, « Une fois » sinon, « Contradictoire » si une fiche le signale. La confiance est comptée, pas estimée.
 
 Avec Claude Code ouvert dans ce dossier, il suffit de demander « fais les fiches de la chaîne machaine en suivant prompts/fiche.md ».
 
