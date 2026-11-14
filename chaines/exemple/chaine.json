@@ -1,0 +1,22 @@
+{
+  "nom": "exemple",
+  "sources": ["@nom_de_la_chaine"],
+  "onglets": ["videos", "streams"],
+  "langue": "en",
+  "duree_min_s": 120,
+  "categories": [
+    {"nom": "recap", "motif": "recap|live|session|trading day|\\(\\+?\\$"},
+    {"nom": "mental", "motif": "mindset|psycholog|anxiety|my story|vlog", "exclure": true},
+    {"nom": "formation", "motif": "how to|strategy|explained|guide|tutorial|course"}
+  ],
+  "defaut": "formation",
+  "forcer": {},
+  "cookies_navigateur": null,
+  "pause_sous_titres_s": [35, 60],
+  "passages_sous_titres": 4,
+  "pause_entre_passages_s": 1800,
+  "pause_audio_s": [20, 40],
+  "pause_videos_s": [10, 25],
+  "ocr_toutes_les_s": 10,
+  "garder_videos": false
+}

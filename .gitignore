@@ -1,0 +1,18 @@
+# Chaque chaîne : données téléchargées, transcriptions, fiches. Contenu de tiers, volumineux.
+chaines/*
+!chaines/exemple/
+
+# Modèles Whisper (~550 Mo) et binaire OCR compilé
+modeles/
+build/
+
+# Analyses personnelles faites avant l'outil générique, gardées en local
+4-pillars/
+pb-blake/
+commun/
+ANALYSES.md
+
+__pycache__/
+*.pyc
+.DS_Store
+*.part
