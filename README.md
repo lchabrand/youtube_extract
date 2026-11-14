@@ -13,6 +13,14 @@ Ensuite, `prompts/` contient les consignes pour tirer de ces transcriptions une 
 
 ## Installation
 
+```bash
+git clone https://github.com/lchabrand/youtube_extract.git
+```
+
+```bash
+cd youtube_extract
+```
+
 Python 3.9 ou plus, sans dépendance Python. Trois outils en ligne de commande :
 
 ```bash
